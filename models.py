@@ -14,6 +14,7 @@ class CountryEnum(str, enum.Enum):
 class ComponentTypeEnum(str, enum.Enum):
     earning = "earning"
     deduction = "deduction"
+    benefit = "benefit"
 
 
 class RuleTypeEnum(str, enum.Enum):
