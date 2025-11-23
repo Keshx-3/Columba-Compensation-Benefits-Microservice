@@ -47,9 +47,9 @@ class CompensationComponent(Base):
     name = Column(String, nullable=False)
     type = Column(Enum(ComponentTypeEnum), nullable=False)
     rule_type = Column(Enum(RuleTypeEnum), nullable=True)
-    rule_value = Column(Numeric, nullable=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    # rule_value = Column(Numeric, nullable=True)
+    # created_at = Column(DateTime(timezone=True), server_default=func.now())
+    # updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     # Relationships
     structure = relationship("SalaryStructure", back_populates="components")

@@ -20,7 +20,7 @@ class CompensationComponentBase(BaseModel):
     name: str
     type: ComponentTypeEnum
     rule_type: Optional[RuleTypeEnum] = None
-    rule_value: Optional[float] = None
+    # rule_value: Optional[float] = None
 
 class CompensationComponentCreate(CompensationComponentBase):
     pass
@@ -78,7 +78,6 @@ def create_salary_structure(structure: SalaryStructureCreate, db: db_dependency)
             name = component.name,
             type = component.type,
             rule_type = component.rule_type,
-            rule_value = component.rule_value
         )
         db.add(new_component)
 

@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import models
 from database import engine
-from routers import salary_structures
+from routers import salary_structures, employee_compensation
 
 app = FastAPI(title="Columba Compensation & Benefits Service")
 
@@ -17,3 +17,4 @@ app.add_middleware(
 )
 
 app.include_router(salary_structures.router)
+app.include_router(employee_compensation.router)
