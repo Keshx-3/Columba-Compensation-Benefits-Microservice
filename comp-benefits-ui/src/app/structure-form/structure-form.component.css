@@ -1,0 +1,71 @@
+.form-container {
+    padding: 20px;
+    max-width: 800px;
+  }
+  .form-group {
+    margin-bottom: 15px;
+  }
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+  .form-control {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  .component-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 4px;
+  }
+  .component-row .form-group {
+    margin-bottom: 0;
+    flex: 1;
+  }
+  .btn-primary {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .btn-primary:disabled {
+    background-color: #94d3a2;
+    cursor: not-allowed;
+  }
+  .btn-secondary {
+    background-color: #17a2b8;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+  .btn-danger {
+    background-color: #dc3545;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .form-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+  }
+  .btn-link {
+    color: #6c757d;
+    text-decoration: none;
+  }

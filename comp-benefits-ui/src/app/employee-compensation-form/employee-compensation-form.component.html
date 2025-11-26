@@ -1,0 +1,35 @@
+<div class="container">
+  <h2>{{ isEditMode ? 'Edit' : 'Assign' }} Compensation</h2>
+  
+  <form [formGroup]="compForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="structure">Salary Structure</label>
+      <select id="structure" formControlName="structure_id" (change)="onStructureChange($any($event.target).value)">
+        <option value="">Select Structure</option>
+        <option *ngFor="let s of structures" [value]="s.id">{{ s.name }} ({{ s.country }})</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="effective_from">Effective From</label>
+      <input type="date" id="effective_from" formControlName="effective_from">
+    </div>
+
+    <div *ngIf="selectedStructure" formArrayName="component_values">
+      <h3>Components</h3>
+      <div *ngFor="let comp of componentValues.controls; let i=index" [formGroupName]="i" class="component-group">
+        <label>{{ comp.get('name')?.value }}</label>
+        <!-- We need to bind the component ID somehow. 
+             If the structure components don't have IDs in the frontend interface, we have a problem.
+             I will assume for now I need to fix the interface and ensure backend sends IDs.
+        -->
+        <input type="number" formControlName="value">
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <a [routerLink]="['/employees', employeeId, 'compensation']" class="btn-secondary">Cancel</a>
+      <button type="submit" class="btn-primary" [disabled]="!compForm.valid">Save</button>
+    </div>
+  </form>
+</div>

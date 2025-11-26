@@ -1,0 +1,25 @@
+<div class="structure-list-container">
+  <div class="header">
+    <h2>Salary Structures</h2>
+    <a routerLink="/structures/new" class="btn-primary">Create New</a>
+  </div>
+
+  <div *ngIf="structures.length === 0" class="no-data">
+    <p>No salary structures found.</p>
+  </div>
+
+  <div class="grid">
+    <div *ngFor="let structure of structures" class="card">
+      <h3>{{ structure.name }}</h3>
+      <p><strong>Country:</strong> {{ structure.country }}</p>
+      <!-- <strong>Components:</strong> {{ structure.components?.length || 0 }} -->
+      <p><strong>Created At:</strong> {{ structure.created_at | date }}</p>
+      <p><strong>Updated At:</strong> {{ structure.updated_at | date }}</p>
+      <div class="actions">
+        <a [routerLink]="['/structures', structure.id]" class="btn-secondary">View</a>
+        <a [routerLink]="['/structures', structure.id, 'edit']" class="btn-secondary">Edit</a>
+        <button (click)="deleteStructure(structure.id!)" class="btn-danger">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>

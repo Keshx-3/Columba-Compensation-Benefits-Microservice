@@ -1,0 +1,16 @@
+<div class="app-container">
+  <aside class="sidebar">
+    <h1>Compensation & Benefits</h1>
+    <nav>
+      <ul>
+        <li><a routerLink="/structures" routerLinkActive="active">Salary Structures</a></li>
+        <li><a routerLink="/structures/new" routerLinkActive="active">New Structure</a></li>
+        <li><a routerLink="employees/:id/compensation/new" routerLinkActive="active">Assign compensation</a></li>
+
+      </ul>
+    </nav>
+  </aside>
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

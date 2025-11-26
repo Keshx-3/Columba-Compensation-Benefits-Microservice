@@ -1,0 +1,36 @@
+<div class="detail-container" *ngIf="structure">
+  <div class="header">
+    <h2>{{ structure.name }}</h2>
+    <div class="actions">
+      <a [routerLink]="['/structures', structure.id, 'edit']" class="btn-primary">Edit</a>
+      <a routerLink="/structures" class="btn-secondary">Back to List</a>
+    </div>
+  </div>
+
+  <div class="info-card">
+    <p><strong>Country:</strong> {{ structure.country }}</p>
+    <p><strong>ID:</strong> {{ structure.id }}</p>
+  </div>
+
+  <h3>Components</h3>
+  <table class="components-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Rule Type</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let comp of structure.components">
+        <td>{{ comp.name }}</td>
+        <td><span class="badge" [class]="comp.type">{{ comp.type | titlecase }}</span></td>
+        <td>{{ comp.rule_type | titlecase }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div *ngIf="!structure" class="loading">
+  <p>Loading structure details...</p>
+</div>

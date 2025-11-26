@@ -74,9 +74,13 @@ def assign_employee_compensation(
     db.commit()
     db.refresh(new_compensation)
 
+    # Validate Component Exists and belongs to structure
+    valid_component_ids = {c.id for c in structure.components}
+
     for val_data in data.component_values:
-        # Validate Component Exists and belongs to structure (optional but good practice)
-        # For now, we assume the frontend sends valid component IDs for the structure
+        if val_data.component_id not in valid_component_ids:
+            raise HTTPException(status_code=400,
+                                detail=f"Component ID {val_data.component_id} does not belong to Structure ID {data.structure_id}")
 
         new_value = EmployeeComponentValue(
             employee_compensation_id=new_compensation.id,
@@ -118,6 +122,16 @@ def update_employee_compensation(
     latest_comp.structure_id = data.structure_id
     latest_comp.effective_from = data.effective_from
 
+    # Validate new structure and components
+    structure = db.query(SalaryStructure).filter(SalaryStructure.id == data.structure_id).first()
+    if not structure:
+        raise HTTPException(status_code=404, detail="Salary structure not found")
+
+    valid_component_ids = {c.id for c in structure.components}
+    for val_data in data.component_values:
+        if val_data.component_id not in valid_component_ids:
+            raise HTTPException(status_code=400, detail=f"Component ID {val_data.component_id} does not belong to Structure ID {data.structure_id}")
+
     # Update Values (Full Replacement)
     db.query(EmployeeComponentValue).filter(EmployeeComponentValue.employee_compensation_id == latest_comp.id).delete()
 
@@ -132,4 +146,5 @@ def update_employee_compensation(
     db.commit()
     db.refresh(latest_comp)
     return latest_comp
+
 

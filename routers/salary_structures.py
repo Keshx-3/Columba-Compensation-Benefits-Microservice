@@ -4,7 +4,9 @@ from typing import List, Optional, Annotated
 from sqlalchemy.orm import Session
 from datetime import datetime
 from database import SessionLocal
-from models import SalaryStructure, CompensationComponent, CountryEnum, ComponentTypeEnum, RuleTypeEnum
+from models import SalaryStructure, CompensationComponent, CountryEnum, ComponentTypeEnum, RuleTypeEnum, \
+    EmployeeCompensation
+
 
 def get_db():
     db = SessionLocal()
@@ -35,6 +37,9 @@ class CompensationComponentResponse(CompensationComponentBase):
     class Config:
         orm_mode = True
 
+class CompensationComponentUpdate(CompensationComponentBase):
+    id: Optional[int] = None
+
 class SalaryStructureBase(BaseModel):
     name: str
     country: CountryEnum
@@ -52,6 +57,10 @@ class SalaryStructureCommon(SalaryStructureBase):
         json_encoders = {
             datetime: lambda v: v.strftime("%Y-%m-%d %H:%M:%S")
         }
+
+class SalaryStructureUpdate(SalaryStructureBase):
+    components: List[CompensationComponentUpdate]
+
 
 class SalaryStructureResponse(SalaryStructureCommon):
     pass
@@ -71,6 +80,7 @@ def create_salary_structure(structure: SalaryStructureCreate, db: db_dependency)
         country = structure.country
     )
     db.add(new_structure)
+    db.flush()
 
     for component in structure.components:
         new_component = CompensationComponent(
@@ -107,7 +117,7 @@ def get_salary_structure(structure_id: int, db: db_dependency):
 
 
 
-# Update a salary structure
+#Update a salary structure
 @router.put("/{structure_id}", response_model=SalaryStructureResponse, status_code=200)
 def update_salary_structure(structure_id: int, structure: SalaryStructureCreate, db: db_dependency):
     db_structure = db.query(SalaryStructure).filter(SalaryStructure.id == structure_id).first()
@@ -116,6 +126,16 @@ def update_salary_structure(structure_id: int, structure: SalaryStructureCreate,
     db_structure.name = structure.name
     db_structure.country = structure.country
     db_structure.updated_at = datetime.now()
+
+    is_in_use = db.query(EmployeeCompensation).filter(
+        EmployeeCompensation.structure_id == structure_id
+    ).first()
+
+    if is_in_use:
+        db.commit()
+        raise HTTPException(
+            status_code=400,
+            detail="Cannot modify components of this structure: it is currently assigned to one or more employees. Please create a new structure for component changes.")
 
 
     db.query(CompensationComponent).filter(CompensationComponent.structure_id == structure_id).delete()
@@ -126,7 +146,6 @@ def update_salary_structure(structure_id: int, structure: SalaryStructureCreate,
             name = component.name,
             type = component.type,
             rule_type = component.rule_type,
-            rule_value = component.rule_value,
         )
         db.add(new_component)
 
@@ -136,12 +155,24 @@ def update_salary_structure(structure_id: int, structure: SalaryStructureCreate,
 
 
 
+
 # Delete a salary structure
 @router.delete("/{structure_id}", status_code=204)
 def delete_salary_structure(structure_id: int, db: db_dependency):
     structure = db.query(SalaryStructure).filter(SalaryStructure.id == structure_id).first()
     if not structure:
         raise HTTPException(status_code=404, detail="Salary structure not found")
+
+    is_in_use = db.query(EmployeeCompensation).filter(
+        EmployeeCompensation.structure_id == structure_id
+    ).first()
+
+    if is_in_use:
+        raise HTTPException(
+            status_code=400,
+            detail="Cannot delete structure: it is currently assigned to one or more employees."
+        )
+
     db.delete(structure)
     db.commit()
     return None

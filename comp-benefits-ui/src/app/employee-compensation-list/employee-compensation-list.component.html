@@ -1,0 +1,27 @@
+<div class="container">
+  <div class="header">
+    <h2>Compensation History for Employee: {{ employeeId }}</h2>
+    <a [routerLink]="['/employees', employeeId, 'compensation', 'new']" class="btn-primary">Assign New Compensation</a>
+  </div>
+
+  <div *ngIf="compensations.length === 0">
+    <p>No compensation records found for this employee.</p>
+  </div>
+
+  <div *ngFor="let comp of compensations" class="card">
+    <h3>Effective From: {{ comp.effective_from | date }}</h3>
+    <p><strong>Structure ID:</strong> {{ comp.structure_id }}</p>
+    <p><strong>Created At:</strong> {{ comp.created_at | date:'medium' }}</p>
+    
+    <h4>Components</h4>
+    <ul>
+      <li *ngFor="let val of comp.component_values">
+        Component ID: {{ val.component_id }} - Value: {{ val.value | currency }}
+      </li>
+    </ul>
+
+    <div class="actions">
+      <a [routerLink]="['/employees', employeeId, 'compensation', 'edit']" class="btn-secondary">Edit</a>
+    </div>
+  </div>
+</div>

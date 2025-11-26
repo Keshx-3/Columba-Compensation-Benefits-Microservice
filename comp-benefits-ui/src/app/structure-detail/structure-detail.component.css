@@ -1,0 +1,57 @@
+.detail-container {
+    padding: 20px;
+    max-width: 800px;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .actions {
+    display: flex;
+    gap: 10px;
+  }
+  .info-card {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #eee;
+  }
+  .components-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  .components-table th, .components-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+  }
+  .components-table th {
+    background-color: #f4f4f4;
+  }
+  .btn-primary {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 15px;
+    text-decoration: none;
+    border-radius: 4px;
+  }
+  .btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    padding: 8px 15px;
+    text-decoration: none;
+    border-radius: 4px;
+  }
+  .badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    color: white;
+  }
+  .badge.earning { background-color: #28a745; }
+  .badge.deduction { background-color: #dc3545; }
+  .badge.benefit { background-color: #17a2b8; }
