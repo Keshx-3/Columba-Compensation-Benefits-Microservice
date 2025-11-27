@@ -12,9 +12,7 @@
     <div *ngFor="let structure of structures" class="card">
       <h3>{{ structure.name }}</h3>
       <p><strong>Country:</strong> {{ structure.country }}</p>
-      <!-- <strong>Components:</strong> {{ structure.components?.length || 0 }} -->
-      <p><strong>Created At:</strong> {{ structure.created_at | date }}</p>
-      <p><strong>Updated At:</strong> {{ structure.updated_at | date }}</p>
+      <p><strong>Components:</strong> {{ structure.components.length || 0 }}</p>
       <div class="actions">
         <a [routerLink]="['/structures', structure.id]" class="btn-secondary">View</a>
         <a [routerLink]="['/structures', structure.id, 'edit']" class="btn-secondary">Edit</a>

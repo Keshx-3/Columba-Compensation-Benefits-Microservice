@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Observable, of } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
 import { CompensationService, SalaryStructure, EmployeeCompensation } from '../services';
 
 @Component({
@@ -9,22 +11,19 @@ import { CompensationService, SalaryStructure, EmployeeCompensation } from '../s
     standalone: true,
     imports: [CommonModule, ReactiveFormsModule, RouterLink],
     templateUrl: './employee-compensation-form.component.html',
-    styles: [`
-    .container { padding: 20px; max-width: 600px; margin: 0 auto; }
-    .form-group { margin-bottom: 15px; }
-    label { display: block; margin-bottom: 5px; font-weight: bold; }
-    input, select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
-    .btn-primary { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
-    .btn-secondary { background-color: #6c757d; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; margin-right: 10px; }
-    .component-group { border: 1px solid #eee; padding: 10px; margin-bottom: 10px; border-radius: 4px; }
-  `]
+    styleUrl: './employee-compensation-form.component.css' 
 })
 export class EmployeeCompensationFormComponent implements OnInit {
     compForm: FormGroup;
-    structures: SalaryStructure[] = [];
+    structures$: Observable<SalaryStructure[]>;
+    errorMessage: string = '';
     employeeId: string = '';
     isEditMode: boolean = false;
     selectedStructure: SalaryStructure | undefined;
+
+    get componentValues(): FormArray {
+        return this.compForm.get('component_values') as FormArray;
+    }
 
     constructor(
         private fb: FormBuilder,
@@ -37,57 +36,76 @@ export class EmployeeCompensationFormComponent implements OnInit {
             effective_from: ['', Validators.required],
             component_values: this.fb.array([])
         });
+
+        this.structures$ = this.compensationService.getSalaryStructures().pipe(
+            tap(data => {
+                console.log('Structures loaded via AsyncPipe:', data);
+                // We still need the data for onStructureChange, so we might need to store it or find it from the array in the template
+                // But for now let's just see if it loads.
+                // To support the existing logic, we can tap and assign to a local var if needed, 
+                // but better to rely on the async pipe result in the template.
+                // However, onStructureChange needs the full object.
+                // Let's assign to a local variable here as a side effect (not ideal but practical for now)
+                this.structures = data;
+                if (this.isEditMode) {
+                    this.loadExistingCompensation();
+                }
+            }),
+            catchError(err => {
+                console.error('Error in AsyncPipe:', err);
+                this.errorMessage = 'Error loading structures: ' + JSON.stringify(err);
+                return of([]);
+            })
+        );
     }
+
+    // Keep this for local access if needed, but try to use observable
+    structures: SalaryStructure[] = [];
 
     ngOnInit(): void {
         this.route.paramMap.subscribe(params => {
             this.employeeId = params.get('id') || '';
-            // Check if URL ends with 'edit' to determine mode
             this.isEditMode = this.router.url.endsWith('edit');
-
-            this.loadStructures();
-        });
-    }
-
-    get componentValues() {
-        return this.compForm.get('component_values') as FormArray;
-    }
-
-    loadStructures() {
-        this.compensationService.getSalaryStructures().subscribe(data => {
-            this.structures = data;
-            if (this.isEditMode) {
-                this.loadExistingCompensation();
-            }
+            // loadStructures is no longer needed as we init observable in constructor
         });
     }
 
     loadExistingCompensation() {
         this.compensationService.getEmployeeCompensation(this.employeeId).subscribe(data => {
             if (data && data.length > 0) {
-                // Assuming we edit the latest one or the logic handles it. 
-                // The backend update updates the latest effective one.
-                // For simplicity, let's pre-fill with the latest one found.
-                // Sort by effective date desc if needed, but backend returns list.
-                const latest = data[data.length - 1]; // simplistic
+                const latest = data[data.length - 1];
 
                 this.compForm.patchValue({
                     structure_id: latest.structure_id,
                     effective_from: latest.effective_from
                 });
 
-                this.onStructureChange(latest.structure_id);
-
-                // Patch component values
-                // We need to wait for onStructureChange to build the form array
-                setTimeout(() => {
-                    latest.component_values.forEach(val => {
-                        const control = this.componentValues.controls.find(c => c.value.component_id === val.component_id);
-                        if (control) {
-                            control.patchValue({ value: val.value });
+                // Ensure structures are loaded before triggering change
+                if (this.structures.length > 0) {
+                    this.onStructureChange(latest.structure_id);
+                    this.patchComponentValues(latest);
+                } else {
+                    // If structures not loaded yet, wait for them (simple retry or check in tap)
+                    // Since we load structures in constructor, they should be there or coming.
+                    // We can subscribe to structures$ again or just rely on the tap in constructor updating this.structures
+                    // A better way is to combineLatest but for now let's just check
+                    const checkInterval = setInterval(() => {
+                        if (this.structures.length > 0) {
+                            clearInterval(checkInterval);
+                            this.onStructureChange(latest.structure_id);
+                            this.patchComponentValues(latest);
                         }
-                    });
-                }, 100);
+                    }, 100);
+                }
+            }
+        });
+    }
+
+    patchComponentValues(latest: EmployeeCompensation) {
+        latest.component_values.forEach(val => {
+            const control = this.componentValues.controls.find(c => c.value.component_id === val.component_id);
+            if (control) {
+                control.patchValue({ value: val.value });
             }
         });
     }
@@ -99,12 +117,6 @@ export class EmployeeCompensationFormComponent implements OnInit {
         this.componentValues.clear();
         if (this.selectedStructure) {
             this.selectedStructure.components.forEach(comp => {
-                // We need the component ID, but the structure components might not have IDs in the interface I defined earlier?
-                // Let's check the interface in compensation.ts. 
-                // Wait, SalaryStructure.components is CompensationComponent[].
-                // CompensationComponent interface: { name, type, rule_type, rule_value }. It MISSES ID!
-                // I need to check the backend response for SalaryStructure to see if components have IDs.
-
                 this.componentValues.push(this.fb.group({
                     component_id: [comp.id],
                     name: [comp.name],

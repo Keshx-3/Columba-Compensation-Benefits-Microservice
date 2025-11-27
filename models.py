@@ -35,7 +35,7 @@ class SalaryStructure(Base):
 
     # Relationships
     components = relationship("CompensationComponent", back_populates="structure", cascade="all, delete")
-
+    employee_compensations = relationship("EmployeeCompensation", back_populates="structure", cascade="all, delete")
 
 
 # COMPONENTS

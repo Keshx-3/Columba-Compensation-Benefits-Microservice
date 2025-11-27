@@ -79,8 +79,7 @@ def assign_employee_compensation(
 
     for val_data in data.component_values:
         if val_data.component_id not in valid_component_ids:
-            raise HTTPException(status_code=400,
-                                detail=f"Component ID {val_data.component_id} does not belong to Structure ID {data.structure_id}")
+            raise HTTPException(status_code=400, detail=f"Component ID {val_data.component_id} does not belong to Structure ID {data.structure_id}")
 
         new_value = EmployeeComponentValue(
             employee_compensation_id=new_compensation.id,
@@ -142,6 +141,9 @@ def update_employee_compensation(
             value=val_data.value
         )
         db.add(new_value)
+
+    # Update the updated_at timestamp
+    latest_comp.updated_at = datetime.now()
 
     db.commit()
     db.refresh(latest_comp)

@@ -1,0 +1,11 @@
+<div class="container">
+      <h2>Employee Compensation Lookup</h2>
+      <div class="card">
+        <p>Enter an Employee ID to view or manage their compensation.</p>
+        <div class="form-group">
+          <label for="employeeId">Employee ID</label>
+          <input type="text" id="employeeId" [(ngModel)]="employeeId" placeholder="e.g. EMP001" (keyup.enter)="onSearch()">
+        </div>
+        <button class="btn-primary" (click)="onSearch()" [disabled]="!employeeId">Search</button>
+      </div>
+    </div>

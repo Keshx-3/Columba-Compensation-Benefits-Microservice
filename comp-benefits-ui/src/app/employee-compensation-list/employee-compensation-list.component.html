@@ -10,7 +10,7 @@
 
   <div *ngFor="let comp of compensations" class="card">
     <h3>Effective From: {{ comp.effective_from | date }}</h3>
-    <p><strong>Structure ID:</strong> {{ comp.structure_id }}</p>
+    <p><strong>Structure:</strong> {{ structuresMap[comp.structure_id] || comp.structure_id }}</p>
     <p><strong>Created At:</strong> {{ comp.created_at | date:'medium' }}</p>
     
     <h4>Components</h4>

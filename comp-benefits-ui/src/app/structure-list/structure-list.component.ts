@@ -6,9 +6,9 @@ import { CompensationService, SalaryStructure } from '../services';
 @Component({
   selector: 'app-structure-list',
   standalone: true,
-  imports: [ CommonModule, RouterLink ],
+  imports: [CommonModule, RouterLink],
   templateUrl: './structure-list.component.html',
-  styleUrl: './structure-list.component.css'
+  styleUrl: './structure-list.component.css',
 })
 export class StructureListComponent implements OnInit {
   structures: SalaryStructure[] = [];
@@ -37,21 +37,10 @@ export class StructureListComponent implements OnInit {
   }
 
   deleteStructure(id: number): void {
-  if (confirm('Are you sure you want to delete this salary structure?')) {
-    this.compensationService.deleteSalaryStructure(id).subscribe({
-      next: () => {
+    if (confirm('Are you sure you want to delete this salary structure?')) {
+      this.compensationService.deleteSalaryStructure(id).subscribe(() => {
         this.loadStructures();
-      },
-      error: (err) => {
-        if (err.status === 400 && err.error?.detail) {
-          alert(err.error.detail); 
-        } else {
-          alert('Cannot delete structure: it is currently assigned to one or more employees.');
-        }
-      }
-    });
+      });
+    }
   }
 }
-
-}
-
