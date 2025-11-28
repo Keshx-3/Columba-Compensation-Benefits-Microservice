@@ -4,9 +4,9 @@
 The Columba Compensation & Benefits Microservice is a comprehensive solution for managing organization-wide salary structures and employee compensation plans. It allows HR administrators to define flexible salary structures tailored to different regions (UAE, KSA, India) and assign them to employees, ensuring accurate and compliant compensation management.
 
 ## Tech Stack
-- **Backend**: FastAPI (Python), SQLAlchemy, SQLite, Pydantic
+- **Backend**: FastAPI (Python), SQLAlchemy, PostgreSQL, Pydantic
 - **Frontend**: Angular (TypeScript), HTML, CSS
-- **Database**: SQLite (default, extensible to PostgreSQL/MySQL)
+- **Database**: PostgreSQL
 
 ## Features
 - **Salary Structure Management**:
