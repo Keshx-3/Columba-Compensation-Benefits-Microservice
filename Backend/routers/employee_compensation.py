@@ -50,7 +50,7 @@ class EmployeeCompensationResponse(EmployeeCompensationBase):
 
 router = APIRouter(prefix="/employees", tags=["Employee Compensation"])
 
-
+# Assign compensation for an employee.
 @router.post("/{employee_id}/compensation", response_model=EmployeeCompensationResponse, status_code=201)
 def assign_employee_compensation(
         employee_id: str,
@@ -61,7 +61,6 @@ def assign_employee_compensation(
     if not structure:
         raise HTTPException(status_code=404, detail="Salary structure not found")
 
-    # Check if employee ID in path matches body (optional validation)
     if employee_id != data.employee_id:
         raise HTTPException(status_code=400, detail="Employee ID mismatch")
 
@@ -74,7 +73,6 @@ def assign_employee_compensation(
     db.commit()
     db.refresh(new_compensation)
 
-    # Validate Component Exists and belongs to structure
     valid_component_ids = {c.id for c in structure.components}
 
     for val_data in data.component_values:
@@ -92,7 +90,7 @@ def assign_employee_compensation(
     db.refresh(new_compensation)
     return new_compensation
 
-
+# Get the compensation details for a specific employee.
 @router.get("/{employee_id}/compensation", response_model=List[EmployeeCompensationResponse])
 def get_employee_compensation(employee_id: str, db: Session = Depends(get_db)):
     comp_records = db.query(EmployeeCompensation).filter(EmployeeCompensation.employee_id == employee_id).all()
@@ -100,15 +98,14 @@ def get_employee_compensation(employee_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Compensation details not found for this employee")
     return comp_records
 
-
+# Update an employee's compensation.
 @router.put("/{employee_id}/compensation", response_model=EmployeeCompensationResponse)
 def update_employee_compensation(
         employee_id: str,
         data: EmployeeCompensationCreate,
         db: Session = Depends(get_db)
 ):
-    # Find the latest compensation record
-    # This is a simplification. In reality, you'd likely update a specific compensation ID or create a new effective dated record.
+    
     latest_comp = db.query(EmployeeCompensation) \
         .filter(EmployeeCompensation.employee_id == employee_id) \
         .order_by(EmployeeCompensation.effective_from.desc()) \
@@ -116,12 +113,10 @@ def update_employee_compensation(
 
     if not latest_comp:
         raise HTTPException(status_code=404, detail="No existing compensation record found to update")
-
-    # Update fields
+        
     latest_comp.structure_id = data.structure_id
     latest_comp.effective_from = data.effective_from
 
-    # Validate new structure and components
     structure = db.query(SalaryStructure).filter(SalaryStructure.id == data.structure_id).first()
     if not structure:
         raise HTTPException(status_code=404, detail="Salary structure not found")
@@ -131,7 +126,6 @@ def update_employee_compensation(
         if val_data.component_id not in valid_component_ids:
             raise HTTPException(status_code=400, detail=f"Component ID {val_data.component_id} does not belong to Structure ID {data.structure_id}")
 
-    # Update Values (Full Replacement)
     db.query(EmployeeComponentValue).filter(EmployeeComponentValue.employee_compensation_id == latest_comp.id).delete()
 
     for val_data in data.component_values:
@@ -142,7 +136,6 @@ def update_employee_compensation(
         )
         db.add(new_value)
 
-    # Update the updated_at timestamp
     latest_comp.updated_at = datetime.now()
 
     db.commit()
