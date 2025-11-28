@@ -76,7 +76,17 @@ The Columba Compensation & Benefits Microservice is a comprehensive solution for
 - `PUT /employees/{employee_id}/compensation`: Update the latest compensation record for an employee.
 
 ## Screenshots/Demo
-*(Placeholder for screenshots or demo videos)*
+<img width="1892" height="903" alt="comp-benefits-structure-create" src="https://github.com/user-attachments/assets/946297fb-1d5e-47af-a286-893424b654e6" />
+
+<img width="1895" height="906" alt="comp-benefits-structure-CRUD" src="https://github.com/user-attachments/assets/2a4385bb-9e37-4f1b-a75e-d1ed70722a01" />
+
+<img width="1897" height="906" alt="comp-benefits-structure-details" src="https://github.com/user-attachments/assets/c2c0d924-21bb-4a85-95e9-f19ecb7f21a4" />
+
+<img width="1895" height="905" alt="comp-benefits-employee-compensation" src="https://github.com/user-attachments/assets/7110d7e6-70ba-4633-aa03-604ac2b462c0" />
+
+<img width="1896" height="905" alt="comp-benefits-employee-comp-value" src="https://github.com/user-attachments/assets/135471a0-777d-4501-8fac-54eef27a65ca" />
+
+
 
 <br>
 <br>
