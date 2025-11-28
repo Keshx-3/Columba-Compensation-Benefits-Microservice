@@ -1,5 +1,8 @@
 fastapi==0.122.0
+uvicorn[standard]
 pydantic==2.12.5
 python-dotenv==1.2.1
 SQLAlchemy==2.0.44
 typing_extensions==4.15.0
+psycopg2-binary
+alembic
