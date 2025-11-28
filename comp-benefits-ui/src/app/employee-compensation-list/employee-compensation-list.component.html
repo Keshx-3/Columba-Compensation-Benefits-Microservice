@@ -16,7 +16,7 @@
     <h4>Components</h4>
     <ul>
       <li *ngFor="let val of comp.component_values">
-        Component ID: {{ val.component_id }} - Value: {{ val.value | currency }}
+        {{ componentsMap[val.component_id] }} (ID: {{ val.component_id }}) - Value: {{ val.value | currency }}
       </li>
     </ul>
 

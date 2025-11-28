@@ -23,6 +23,7 @@ export interface EmployeeComponentValue {
   id?: number;
   component_id: number;
   value: number;
+  name: string;
   employee_compensation_id?: number;
 }
 
@@ -40,7 +41,7 @@ export interface EmployeeCompensationCreate {
   employee_id: string;
   structure_id: number;
   effective_from: string;
-  component_values: { component_id: number; value: number }[];
+  component_values: { component_id: number; name: string; value: number }[];
 }
 
 @Injectable({

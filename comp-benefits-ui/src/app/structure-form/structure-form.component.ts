@@ -87,12 +87,22 @@ export class StructureFormComponent implements OnInit {
     const formValue = this.structureForm.value;
 
     if (this.isEditMode && this.structureId) {
-      this.compensationService.updateSalaryStructure(this.structureId, formValue).subscribe(() => {
-        this.router.navigate(['/structures']);
+      this.compensationService.updateSalaryStructure(this.structureId, formValue).subscribe({
+        next: () => {
+          this.router.navigate(['/structures']);
+        },
+        error: (err) => {
+          alert('Cannot update salary structure. It is assigned to one or more employees.');
+        }
       });
     } else {
-      this.compensationService.createSalaryStructure(formValue).subscribe(() => {
-        this.router.navigate(['/structures']);
+      this.compensationService.createSalaryStructure(formValue).subscribe({
+        next: () => {
+          this.router.navigate(['/structures']);
+        },
+        error: (err) => {
+          alert('Error creating salary structure. Please try again.');
+        }
       });
     }
   }

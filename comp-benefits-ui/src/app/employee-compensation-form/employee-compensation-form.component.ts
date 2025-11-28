@@ -11,7 +11,7 @@ import { CompensationService, SalaryStructure, EmployeeCompensation } from '../s
     standalone: true,
     imports: [CommonModule, ReactiveFormsModule, RouterLink],
     templateUrl: './employee-compensation-form.component.html',
-    styleUrl: './employee-compensation-form.component.css' 
+    styleUrl: './employee-compensation-form.component.css'
 })
 export class EmployeeCompensationFormComponent implements OnInit {
     compForm: FormGroup;
@@ -39,13 +39,6 @@ export class EmployeeCompensationFormComponent implements OnInit {
 
         this.structures$ = this.compensationService.getSalaryStructures().pipe(
             tap(data => {
-                console.log('Structures loaded via AsyncPipe:', data);
-                // We still need the data for onStructureChange, so we might need to store it or find it from the array in the template
-                // But for now let's just see if it loads.
-                // To support the existing logic, we can tap and assign to a local var if needed, 
-                // but better to rely on the async pipe result in the template.
-                // However, onStructureChange needs the full object.
-                // Let's assign to a local variable here as a side effect (not ideal but practical for now)
                 this.structures = data;
                 if (this.isEditMode) {
                     this.loadExistingCompensation();
@@ -59,14 +52,12 @@ export class EmployeeCompensationFormComponent implements OnInit {
         );
     }
 
-    // Keep this for local access if needed, but try to use observable
     structures: SalaryStructure[] = [];
 
     ngOnInit(): void {
         this.route.paramMap.subscribe(params => {
             this.employeeId = params.get('id') || '';
             this.isEditMode = this.router.url.endsWith('edit');
-            // loadStructures is no longer needed as we init observable in constructor
         });
     }
 
@@ -79,16 +70,10 @@ export class EmployeeCompensationFormComponent implements OnInit {
                     structure_id: latest.structure_id,
                     effective_from: latest.effective_from
                 });
-
-                // Ensure structures are loaded before triggering change
                 if (this.structures.length > 0) {
                     this.onStructureChange(latest.structure_id);
                     this.patchComponentValues(latest);
                 } else {
-                    // If structures not loaded yet, wait for them (simple retry or check in tap)
-                    // Since we load structures in constructor, they should be there or coming.
-                    // We can subscribe to structures$ again or just rely on the tap in constructor updating this.structures
-                    // A better way is to combineLatest but for now let's just check
                     const checkInterval = setInterval(() => {
                         if (this.structures.length > 0) {
                             clearInterval(checkInterval);

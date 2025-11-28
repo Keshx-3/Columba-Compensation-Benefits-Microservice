@@ -25,7 +25,6 @@ export class StructureDetailComponent implements OnInit {
       this.compensationService.getSalaryStructure(+id).subscribe({
         next: (data) => {
           this.structure = data;
-          console.log('Structure details fetched:', this.structure);
           this.cdr.detectChanges();
         },
         error: (err) => {

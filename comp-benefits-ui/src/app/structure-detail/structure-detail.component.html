@@ -10,6 +10,9 @@
   <div class="info-card">
     <p><strong>Country:</strong> {{ structure.country }}</p>
     <p><strong>ID:</strong> {{ structure.id }}</p>
+    <p><strong>Components:</strong> {{ structure.components.length || 0 }}</p>
+    <p><strong>Created On:</strong> {{ structure.created_at | date }}</p>
+    <p><strong>Last Updated On:</strong> {{ structure.updated_at | date }}</p>
   </div>
 
   <h3>Components</h3>

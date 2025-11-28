@@ -25,9 +25,7 @@ export class StructureListComponent implements OnInit {
   loadStructures(): void {
     this.compensationService.getSalaryStructures().subscribe({
       next: (data) => {
-        console.log('Raw data received:', JSON.stringify(data));
         this.structures = data;
-        console.log('Structures assigned:', this.structures);
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -38,8 +36,13 @@ export class StructureListComponent implements OnInit {
 
   deleteStructure(id: number): void {
     if (confirm('Are you sure you want to delete this salary structure?')) {
-      this.compensationService.deleteSalaryStructure(id).subscribe(() => {
-        this.loadStructures();
+      this.compensationService.deleteSalaryStructure(id).subscribe({
+        next: () => {
+          this.loadStructures();
+        },
+        error: (err) => {
+          alert('Cannot delete salary structure. It is assigned to one or more employees.');
+        }
       });
     }
   }
